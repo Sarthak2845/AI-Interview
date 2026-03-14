@@ -163,8 +163,7 @@ Example: ["Question 1", "Question 2", ...]
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7,
             "max_tokens": max_tokens,
-            "top_p": 0.9,
-            "response_format": {"type": "json_object"}  # request JSON output
+            "top_p": 0.9
         }
         
         try:
@@ -173,21 +172,41 @@ Example: ["Question 1", "Question 2", ...]
             result = response.json()
             content = result['choices'][0]['message']['content']
             
-            # Attempt to parse JSON
+            # Parse the response - handle both JSON array and text formats
             try:
-                questions = json.loads(content)
-                if isinstance(questions, list) and all(isinstance(q, str) for q in questions):
-                    return questions
-                else:
-                    # Fallback: try to extract questions from text
-                    lines = [line.strip() for line in content.split('\n') if line.strip()]
-                    questions = [line.lstrip('0123456789.- ') for line in lines if line]
-                    return questions[:num_questions]
+                # Try to parse as JSON first
+                if content.strip().startswith('[') and content.strip().endswith(']'):
+                    questions_data = json.loads(content)
+                    if isinstance(questions_data, list):
+                        return [{"question": q} for q in questions_data if isinstance(q, str) and q.strip()]
+                
+                # Try to parse as JSON object with questions array
+                if content.strip().startswith('{'):
+                    questions_obj = json.loads(content)
+                    if 'questions' in questions_obj and isinstance(questions_obj['questions'], list):
+                        return [{"question": q} for q in questions_obj['questions'] if isinstance(q, str) and q.strip()]
+                
             except json.JSONDecodeError:
-                # If JSON fails, fallback to splitting by newlines and cleaning
-                lines = [line.strip() for line in content.split('\n') if line.strip()]
-                questions = [line.lstrip('0123456789.- ') for line in lines if line]
-                return questions[:num_questions]
+                pass
+            
+            # Fallback: extract questions from text format
+            lines = [line.strip() for line in content.split('\n') if line.strip()]
+            questions = []
+            
+            for line in lines:
+                # Clean up common prefixes and quotes
+                clean_line = line.strip()
+                # Remove numbering, bullets, quotes
+                clean_line = clean_line.lstrip('0123456789.- "\'')
+                clean_line = clean_line.rstrip('"\',')
+                
+                if clean_line and len(clean_line) > 10:  # Valid question should be longer than 10 chars
+                    questions.append(clean_line)
+                    
+                if len(questions) >= num_questions:
+                    break
+            
+            return [{"question": q} for q in questions[:num_questions]]
                 
         except requests.exceptions.RequestException as e:
             raise Exception(f"Groq API request failed: {str(e)}")

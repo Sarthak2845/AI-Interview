@@ -1,5 +1,6 @@
 const { Session, Question, Answer, Analysis } = require('../models');
 const AIService = require('../utils/aiService');
+const { addToLeaderboard } = require('./leaderboardController');
 
 const aiService = new AIService();
 
@@ -24,10 +25,13 @@ class AnalysisController {
           success: true,
           analysis: {
             overallScore: analysis.overallScore,
+            individualScores: analysis.individualScores,
             strengths: analysis.strengths,
+            criticalIssues: analysis.criticalIssues,
             improvements: analysis.improvements,
             detailedAnalysis: analysis.detailedAnalysis,
             recommendations: analysis.recommendations,
+            hiringRecommendation: analysis.hiringRecommendation,
             createdAt: analysis.createdAt
           },
           isExisting: true,
@@ -54,10 +58,13 @@ class AnalysisController {
       analysis = new Analysis({
         sessionId,
         overallScore: analysisResult.overallScore,
+        individualScores: analysisResult.individualScores || [],
         strengths: analysisResult.strengths,
+        criticalIssues: analysisResult.criticalIssues || [],
         improvements: analysisResult.improvements,
         detailedAnalysis: analysisResult.detailedAnalysis,
-        recommendations: analysisResult.recommendations
+        recommendations: analysisResult.recommendations,
+        hiringRecommendation: analysisResult.hiringRecommendation || 'MAYBE'
       });
       await analysis.save();
 
@@ -67,16 +74,53 @@ class AnalysisController {
         status: 'COMPLETED'
       });
 
+      // Add to leaderboard automatically
+      try {
+        const questions = await Question.find({ sessionId });
+        const allTags = [...new Set(questions.flatMap(q => q.tags || []))];
+        
+        // Generate dummy user data (replace with real user data when auth is implemented)
+        const dummyUser = {
+          userId: `user_${sessionId.toString().slice(-6)}`,
+          userName: `User ${Math.floor(Math.random() * 1000)}`,
+          userEmail: `user${Math.floor(Math.random() * 1000)}@example.com`,
+          profilePicture: null
+        };
+        
+        const leaderboardData = {
+          ...dummyUser,
+          sessionId,
+          totalScore: analysisResult.overallScore,
+          difficulty: session.difficulty,
+          questionsAnswered: answers.length,
+          totalQuestions: questions.length,
+          completionPercentage: Math.round((answers.length / questions.length) * 100),
+          tags: allTags
+        };
+        
+        // Add to leaderboard
+        const Leaderboard = require('../models/Leaderboard');
+        await Leaderboard.create(leaderboardData);
+        
+        console.log(`Added user to leaderboard with score: ${analysisResult.overallScore}%`);
+      } catch (leaderboardError) {
+        console.error('Error adding to leaderboard:', leaderboardError);
+        // Don't fail the analysis if leaderboard fails
+      }
+
       console.log(`Analysis completed and saved for session ${sessionId}`);
 
       res.json({
         success: true,
         analysis: {
           overallScore: analysis.overallScore,
+          individualScores: analysis.individualScores,
           strengths: analysis.strengths,
+          criticalIssues: analysis.criticalIssues,
           improvements: analysis.improvements,
           detailedAnalysis: analysis.detailedAnalysis,
           recommendations: analysis.recommendations,
+          hiringRecommendation: analysis.hiringRecommendation,
           createdAt: analysis.createdAt
         },
         message: 'Analysis generated successfully'
@@ -105,10 +149,13 @@ class AnalysisController {
         success: true,
         analysis: {
           overallScore: analysis.overallScore,
+          individualScores: analysis.individualScores,
           strengths: analysis.strengths,
+          criticalIssues: analysis.criticalIssues,
           improvements: analysis.improvements,
           detailedAnalysis: analysis.detailedAnalysis,
           recommendations: analysis.recommendations,
+          hiringRecommendation: analysis.hiringRecommendation,
           createdAt: analysis.createdAt
         }
       });

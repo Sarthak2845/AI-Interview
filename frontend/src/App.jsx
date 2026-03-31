@@ -4,6 +4,7 @@ import Interview from './components/Interview'
 import Analysis from './components/Analysis'
 import ViewQA from './components/ViewQA'
 import TestEndpoints from './components/TestEndpoints'
+import Leaderboard from './components/Leaderboard'
 import { Card, CardContent } from './components/ui/card'
 import { Button } from './components/ui/button'
 import './jankoti-theme.css'
@@ -111,6 +112,17 @@ function App() {
               >
                 <span className="mr-2">📊</span>
                 My Sessions
+              </Button>
+              <Button
+                onClick={() => {
+                  setCurrentView('leaderboard')
+                  setShowSessionList(false)
+                }}
+                className="px-6 py-3 font-medium rounded-full transition-all duration-300 hover:shadow-lg bg-white border-2 hover:bg-gray-50"
+                style={{ color: '#462a67', borderColor: '#462a67' }}
+              >
+                <span className="mr-2">🏆</span>
+                Leaderboard
               </Button>
             </div>
           </div>
@@ -225,6 +237,8 @@ function App() {
                   sessionId={sessionData?.sessionId} 
                   onBack={() => setCurrentView('upload')}
                 />
+              ) : currentView === 'leaderboard' ? (
+                <Leaderboard onBack={() => setCurrentView('upload')} />
               ) : (
                 <Interview 
                   sessionData={sessionData} 

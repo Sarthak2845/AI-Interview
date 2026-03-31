@@ -293,6 +293,28 @@ const Analysis = ({ sessionId, onBack }) => {
             </Card>
           )}
 
+          {/* Critical Issues */}
+          {analysis.criticalIssues && analysis.criticalIssues.length > 0 && (
+            <Card className="mb-8 border-0 shadow-xl bg-gradient-to-br from-red-50 to-pink-50">
+              <CardHeader className="bg-gradient-to-r from-red-600 to-pink-600 text-white rounded-t-lg">
+                <CardTitle className="text-xl flex items-center">
+                  <span className="mr-3 text-2xl">⚠️</span>
+                  Critical Issues Found
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <ul className="space-y-4">
+                  {analysis.criticalIssues.map((issue, index) => (
+                    <li key={index} className="flex items-start p-3 bg-white/60 rounded-lg border-l-4 border-red-500">
+                      <span className="mr-3 text-red-500 text-xl">⚠</span>
+                      <span className="text-red-800 font-medium">{cleanAnalysisText(issue)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Strengths and Improvements */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             

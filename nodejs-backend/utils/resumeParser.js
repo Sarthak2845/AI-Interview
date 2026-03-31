@@ -74,17 +74,55 @@ class ResumeParser {
 
   extractSkills(sections) {
     const skills = new Set();
-    const skillSections = ['skills', 'technologies'];
+    const skillSections = ['skills', 'technologies', 'experience', 'projects', 'header'];
     
+    // Enhanced skill patterns for better extraction
+    const skillPatterns = {
+      // Programming Languages
+      'javascript': /\b(javascript|js|node\.?js|react|vue|angular|express)\b/gi,
+      'python': /\b(python|django|flask|pandas|numpy|fastapi)\b/gi,
+      'java': /\b(java|spring|hibernate|maven|gradle)\b/gi,
+      'react': /\b(react|jsx|redux|next\.?js|gatsby)\b/gi,
+      'node.js': /\b(node\.?js|express|npm|yarn)\b/gi,
+      'css': /\b(css|sass|scss|less|bootstrap|tailwind)\b/gi,
+      'html': /\b(html|html5|dom|semantic)\b/gi,
+      'database': /\b(sql|mysql|postgresql|mongodb|redis|database)\b/gi,
+      'aws': /\b(aws|amazon|ec2|s3|lambda|cloud|devops)\b/gi,
+      'docker': /\b(docker|kubernetes|container|deployment)\b/gi,
+      'git': /\b(git|github|gitlab|version control)\b/gi,
+      'api': /\b(api|rest|graphql|microservices)\b/gi,
+      'testing': /\b(testing|jest|mocha|cypress|unit test)\b/gi,
+      'algorithms': /\b(algorithms|data structures|leetcode|coding)\b/gi,
+      'machine-learning': /\b(machine learning|ml|ai|tensorflow|pytorch)\b/gi,
+      'mobile': /\b(android|ios|react native|flutter|mobile)\b/gi,
+      'security': /\b(security|authentication|jwt|oauth|encryption)\b/gi
+    };
+    
+    // Extract from all relevant sections
     for (const section of skillSections) {
       if (sections[section]) {
-        for (const line of sections[section]) {
-          const cleanLine = line.replace(/^[A-Za-z/&\s]+:?\s*/, '').trim();
-          const candidates = cleanLine.split(/[,•\-\*\/]/).map(s => s.trim()).filter(s => s);
-          
-          for (const skill of candidates) {
-            if (this.isValidSkill(skill)) {
-              skills.add(skill);
+        const sectionText = sections[section].join(' ');
+        
+        // Use pattern matching for better skill extraction
+        Object.entries(skillPatterns).forEach(([skill, pattern]) => {
+          if (pattern.test(sectionText)) {
+            skills.add(skill);
+          }
+        });
+        
+        // Also extract explicit skills from skills section
+        if (section === 'skills') {
+          for (const line of sections[section]) {
+            const cleanLine = line.replace(/^[A-Za-z/&\s]+:?\s*/, '').trim();
+            const candidates = cleanLine.split(/[,•\-\*\/]/).map(s => s.trim()).filter(s => s);
+            
+            for (const skill of candidates) {
+              if (this.isValidSkill(skill)) {
+                const normalizedSkill = this.normalizeSkill(skill);
+                if (normalizedSkill) {
+                  skills.add(normalizedSkill);
+                }
+              }
             }
           }
         }
@@ -201,6 +239,30 @@ class ResumeParser {
     const rating = score >= 80 ? 'Excellent' : score >= 60 ? 'Good' : score >= 40 ? 'Needs Improvement' : 'Poor';
     
     return { score, rating, suggestions: suggestions.slice(0, 5) };
+  }
+
+  normalizeSkill(skill) {
+    const skillMap = {
+      'js': 'javascript',
+      'nodejs': 'node.js',
+      'reactjs': 'react',
+      'html5': 'html',
+      'css3': 'css',
+      'mysql': 'database',
+      'postgresql': 'database',
+      'mongodb': 'database',
+      'github': 'git',
+      'gitlab': 'git',
+      'amazon web services': 'aws',
+      'machine learning': 'machine-learning',
+      'artificial intelligence': 'machine-learning',
+      'react native': 'mobile',
+      'unit testing': 'testing',
+      'data structures': 'algorithms'
+    };
+    
+    const normalized = skill.toLowerCase().trim();
+    return skillMap[normalized] || (normalized.length >= 3 ? normalized : null);
   }
 }
 

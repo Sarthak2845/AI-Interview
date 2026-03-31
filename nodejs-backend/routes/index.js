@@ -4,6 +4,8 @@ const router = express.Router();
 // Import route modules
 const interviewRoutes = require('./interview');
 const analysisRoutes = require('./analysis');
+const leaderboardRoutes = require('./leaderboard');
+const questionBankRoutes = require('./questionBank');
 
 // Health check
 router.get('/health', (req, res) => {
@@ -18,6 +20,8 @@ router.get('/health', (req, res) => {
 // Mount routes
 router.use('/', interviewRoutes);
 router.use('/', analysisRoutes);
+router.use('/leaderboard', leaderboardRoutes);
+router.use('/question-bank', questionBankRoutes);
 
 // 404 handler for API routes
 router.use('*', (req, res) => {

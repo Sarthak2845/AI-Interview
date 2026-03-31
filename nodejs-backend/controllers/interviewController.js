@@ -1,6 +1,7 @@
 const { Session, Question, Answer } = require('../models');
 const ResumeParser = require('../utils/resumeParser');
 const AIService = require('../utils/aiService');
+const { addQuestionsToBank, suggestQuestionsForSession, extractTagsFromQuestion, determineCategoryFromTags } = require('./questionBankController');
 
 const resumeParser = new ResumeParser();
 const aiService = new AIService();
@@ -32,37 +33,35 @@ class InterviewController {
         });
       }
 
-      // Extract keywords
+      // Extract keywords and skills from resume
       const keywords = resumeParser.extractKeywords(resumeText);
+      const resumeSkills = keywords.skills || [];
+      
+      console.log('Extracted skills from resume:', resumeSkills);
 
-      // Check if user already has questions for similar resume
-      const existingSession = await Session.findOne({ 
-        userId, 
-        fileName: req.file.originalname,
-        difficulty 
-      }).sort({ createdAt: -1 });
-
-      if (existingSession) {
-        const existingQuestions = await Question.find({ 
-          sessionId: existingSession._id 
-        }).sort({ questionIndex: 1 });
-        
-        if (existingQuestions.length > 0) {
-          console.log(`Returning existing questions for user ${userId}`);
-          return res.json({
-            success: true,
-            sessionId: existingSession._id,
-            questions: existingQuestions.map(q => ({ question: q.questionText })),
-            difficulty,
-            totalQuestions: existingQuestions.length,
-            isExisting: true,
-            atsQuality: keywords.atsQuality
-          });
-        }
+      // Try to get questions from bank based on resume skills
+      const bankQuestions = await suggestQuestionsForSession(resumeSkills, difficulty, Math.floor(parseInt(numQuestions) * 0.7));
+      
+      let questions = [];
+      let questionsFromBank = 0;
+      
+      // Use bank questions if available
+      if (bankQuestions.length > 0) {
+        questions = bankQuestions.map(q => ({ question: q.questionText }));
+        questionsFromBank = bankQuestions.length;
+        console.log(`Using ${questionsFromBank} questions from bank for skills:`, resumeSkills.slice(0, 3));
       }
-
-      // Generate new questions
-      const questions = await aiService.generateQuestions(keywords, parseInt(numQuestions), difficulty);
+      
+      // Generate remaining questions with AI if needed
+      const remainingQuestions = parseInt(numQuestions) - questions.length;
+      if (remainingQuestions > 0) {
+        const aiQuestions = await aiService.generateQuestions(keywords, remainingQuestions, difficulty);
+        questions = [...questions, ...aiQuestions];
+        
+        // Add new AI questions to bank for future use
+        await addQuestionsToBank(aiQuestions, difficulty);
+        console.log(`Generated ${aiQuestions.length} new questions with AI`);
+      }
 
       // Create new session
       const session = new Session({
@@ -75,13 +74,38 @@ class InterviewController {
       });
       await session.save();
 
-      // Save questions
+      // Save questions with proper tags based on resume skills
       const savedQuestions = [];
       for (let i = 0; i < questions.length; i++) {
+        const questionText = questions[i].question;
+        let tags = [];
+        
+        if (i < questionsFromBank) {
+          // Use existing tags from bank question
+          tags = bankQuestions[i].tags || [];
+        } else {
+          // Extract tags for new AI-generated questions
+          tags = extractTagsFromQuestion(questionText);
+          // Also include relevant resume skills
+          const relevantSkills = resumeSkills.filter(skill => 
+            questionText.toLowerCase().includes(skill.toLowerCase())
+          );
+          tags = [...new Set([...tags, ...relevantSkills])];
+        }
+        
+        const category = determineCategoryFromTags(tags);
+        const isFromBank = i < questionsFromBank;
+        const bankQuestionId = isFromBank ? bankQuestions[i]._id : null;
+        
         const question = new Question({
           sessionId: session._id,
-          questionText: questions[i].question,
-          questionIndex: i
+          questionText,
+          questionIndex: i,
+          tags,
+          difficulty,
+          category,
+          isFromBank,
+          bankQuestionId
         });
         await question.save();
         savedQuestions.push(question);

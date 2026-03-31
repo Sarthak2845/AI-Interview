@@ -13,10 +13,26 @@ const analysisSchema = new mongoose.Schema({
     max: 100,
     required: true
   },
+  individualScores: [{
+    questionIndex: Number,
+    score: Number,
+    technicalAccuracy: Number,
+    completeness: Number,
+    practicalApplication: Number,
+    communication: Number,
+    penalties: Number,
+    feedback: String
+  }],
   strengths: [String],
+  criticalIssues: [String],
   improvements: [String],
   detailedAnalysis: String,
   recommendations: [String],
+  hiringRecommendation: {
+    type: String,
+    enum: ['HIRE', 'MAYBE', 'NO_HIRE'],
+    default: 'MAYBE'
+  },
   isGenerated: {
     type: Boolean,
     default: true

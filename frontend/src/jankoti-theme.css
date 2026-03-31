@@ -1,0 +1,221 @@
+/* Jankoti Color Palette */
+:root {
+  /* Primary Colors */
+  --jankoti-primary: #462a67;
+  --jankoti-secondary: #af19d7;
+  --jankoti-accent: #7164bc;
+  --jankoti-purple: #612ba2;
+  --jankoti-violet: #5a199b;
+  
+  /* Background Colors */
+  --jankoti-bg-light: #f2edfa;
+  --jankoti-bg-lighter: #f3ecfb;
+  --jankoti-bg-lightest: #f4ecfb;
+  --jankoti-bg-cream: #f7eeff;
+  
+  /* Text Colors */
+  --jankoti-text-dark: #2f2f30;
+  --jankoti-text-darker: #2e2e2f;
+  --jankoti-text-darkest: #2a2a2a;
+  --jankoti-text-medium: #525254;
+  
+  /* Neutral Colors */
+  --jankoti-gray-light: #c6bdd2;
+  --jankoti-gray-medium: #9c95a3;
+  --jankoti-gray-dark: #6e727a;
+  --jankoti-blue-light: #b0c1d9;
+  --jankoti-blue-medium: #728cab;
+  --jankoti-blue-dark: #7c94b4;
+  
+  /* Accent Colors */
+  --jankoti-orange: #c97c42;
+  --jankoti-peach: #ffcba4;
+  --jankoti-brown: #ae805d;
+  --jankoti-pink: #df82ff;
+  
+  /* Status Colors */
+  --jankoti-success: #6f9ca8;
+  --jankoti-warning: #c97c43;
+  --jankoti-error: #b944ac;
+  
+  /* White */
+  --jankoti-white: #ffffff;
+}
+
+/* Global Styles */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, var(--jankoti-bg-light) 0%, var(--jankoti-bg-lighter) 100%);
+  color: var(--jankoti-text-dark);
+}
+
+/* Custom Gradients */
+.jankoti-gradient-primary {
+  background: linear-gradient(135deg, var(--jankoti-primary) 0%, var(--jankoti-accent) 100%);
+}
+
+.jankoti-gradient-secondary {
+  background: linear-gradient(135deg, var(--jankoti-secondary) 0%, var(--jankoti-purple) 100%);
+}
+
+.jankoti-gradient-bg {
+  background: linear-gradient(135deg, var(--jankoti-bg-light) 0%, var(--jankoti-bg-cream) 100%);
+}
+
+.jankoti-gradient-card {
+  background: linear-gradient(135deg, var(--jankoti-white) 0%, var(--jankoti-bg-lightest) 100%);
+}
+
+/* Glass Effect */
+.jankoti-glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Custom Shadows */
+.jankoti-shadow {
+  box-shadow: 0 8px 32px rgba(70, 42, 103, 0.12);
+}
+
+.jankoti-shadow-lg {
+  box-shadow: 0 20px 60px rgba(70, 42, 103, 0.15);
+}
+
+/* Button Styles */
+.jankoti-btn-primary {
+  background: linear-gradient(135deg, var(--jankoti-primary) 0%, var(--jankoti-accent) 100%);
+  color: var(--jankoti-white);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.jankoti-btn-primary:hover {
+  background: linear-gradient(135deg, var(--jankoti-accent) 0%, var(--jankoti-purple) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(70, 42, 103, 0.25);
+}
+
+.jankoti-btn-secondary {
+  background: linear-gradient(135deg, var(--jankoti-secondary) 0%, var(--jankoti-pink) 100%);
+  color: var(--jankoti-white);
+  border: none;
+}
+
+.jankoti-btn-secondary:hover {
+  background: linear-gradient(135deg, var(--jankoti-pink) 0%, var(--jankoti-secondary) 100%);
+  transform: translateY(-2px);
+}
+
+/* Card Styles */
+.jankoti-card {
+  background: var(--jankoti-white);
+  border: 1px solid rgba(70, 42, 103, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(70, 42, 103, 0.08);
+  transition: all 0.3s ease;
+}
+
+.jankoti-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(70, 42, 103, 0.12);
+}
+
+/* Progress Bar */
+.jankoti-progress {
+  background: var(--jankoti-bg-lighter);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.jankoti-progress-fill {
+  background: linear-gradient(90deg, var(--jankoti-secondary) 0%, var(--jankoti-accent) 100%);
+  transition: width 0.5s ease;
+}
+
+/* Badge Styles */
+.jankoti-badge-primary {
+  background: linear-gradient(135deg, var(--jankoti-primary) 0%, var(--jankoti-accent) 100%);
+  color: var(--jankoti-white);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.jankoti-badge-secondary {
+  background: var(--jankoti-bg-lighter);
+  color: var(--jankoti-primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Input Styles */
+.jankoti-input {
+  background: var(--jankoti-white);
+  border: 2px solid var(--jankoti-bg-lighter);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: var(--jankoti-text-dark);
+  transition: all 0.3s ease;
+}
+
+.jankoti-input:focus {
+  border-color: var(--jankoti-secondary);
+  box-shadow: 0 0 0 3px rgba(175, 25, 215, 0.1);
+  outline: none;
+}
+
+/* Animation Classes */
+.jankoti-fade-in {
+  animation: jankoticFadeIn 0.6s ease-out;
+}
+
+.jankoti-slide-up {
+  animation: jankotiSlideUp 0.6s ease-out;
+}
+
+@keyframes jankoticFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes jankotiSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .jankoti-card {
+    margin: 8px;
+    border-radius: 12px;
+  }
+  
+  .jankoti-shadow-lg {
+    box-shadow: 0 10px 30px rgba(70, 42, 103, 0.1);
+  }
+}
+/* Logo Styles */
+.logo-image {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.05);
+}

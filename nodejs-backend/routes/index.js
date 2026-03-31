@@ -1,0 +1,42 @@
+const express = require('express');
+const router = express.Router();
+
+// Import route modules
+const interviewRoutes = require('./interview');
+const analysisRoutes = require('./analysis');
+
+// Health check
+router.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    service: 'Jankoti Node.js Backend',
+    timestamp: new Date().toISOString(),
+    version: '2.0.0'
+  });
+});
+
+// Mount routes
+router.use('/', interviewRoutes);
+router.use('/', analysisRoutes);
+
+// 404 handler for API routes
+router.use('*', (req, res) => {
+  res.status(404).json({ 
+    success: false, 
+    error: 'API route not found',
+    availableRoutes: [
+      'GET /api/health',
+      'POST /api/upload-resume',
+      'POST /api/submit-answer',
+      'GET /api/session/:id',
+      'GET /api/session/:id/qa',
+      'GET /api/sessions/all',
+      'POST /api/analyze/:sessionId',
+      'GET /api/analysis/:sessionId',
+      'DELETE /api/analysis/:sessionId',
+      'GET /api/analysis-status/:sessionId'
+    ]
+  });
+});
+
+module.exports = router;

@@ -35,27 +35,14 @@ const ResumeUpload = ({ onResumeUploaded }) => {
     setFile(selectedFile)
     setError('')
     
-    // Get preview of resume content
-    await getResumePreview(selectedFile)
+    // Note: Preview functionality will be added later
+    // await getResumePreview(selectedFile)
   }
 
+  // Preview functionality will be integrated with the main upload
   const getResumePreview = async (file) => {
-    const formData = new FormData()
-    formData.append('file', file)
-
-    try {
-      const response = await fetch('http://localhost:8000/parse-resume', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setPreviewData(data)
-      }
-    } catch (error) {
-      console.error('Preview failed:', error)
-    }
+    // This will be implemented when needed
+    console.log('Preview for:', file.name)
   }
 
   const handleDrop = (e) => {
@@ -167,26 +154,33 @@ const ResumeUpload = ({ onResumeUploaded }) => {
   }
 
   return (
-    <div className="p-8">
-      <CardHeader className="text-center pb-6">
-        <CardTitle className="text-3xl font-bold text-gray-800 mb-2">
+    <div className="p-10" style={{ background: 'linear-gradient(135deg, #ffffff 0%, #f7eeff 100%)' }}>
+      <CardHeader className="text-center pb-8">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #af19d7 0%, #df82ff 100%)' }}>
+          <span className="text-4xl">📄</span>
+        </div>
+        <CardTitle className="text-4xl font-bold mb-4" style={{ color: '#462a67' }}>
           Upload Your Resume
         </CardTitle>
-        <CardDescription className="text-lg text-gray-600">
+        <CardDescription className="text-xl" style={{ color: '#6e727a' }}>
           Get personalized AI-generated interview questions based on your experience
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-8">
         {/* File Upload Area */}
         <div
-          className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 cursor-pointer ${
+          className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition-all duration-300 cursor-pointer jankoti-card ${
             dragOver
-              ? 'border-purple-500 bg-purple-50 scale-105'
+              ? 'border-purple-500 scale-105'
               : file
-              ? 'border-green-500 bg-green-50'
-              : 'border-gray-300 bg-gray-50 hover:border-purple-400 hover:bg-purple-50'
+              ? 'border-green-500'
+              : 'hover:border-purple-400'
           }`}
+          style={{
+            borderColor: dragOver ? '#af19d7' : file ? '#6f9ca8' : '#c6bdd2',
+            background: dragOver ? 'rgba(175, 25, 215, 0.05)' : file ? 'rgba(111, 156, 168, 0.05)' : 'rgba(255, 255, 255, 0.8)'
+          }}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -201,126 +195,94 @@ const ResumeUpload = ({ onResumeUploaded }) => {
           />
 
           {file ? (
-            <div className="animate-slide-in">
-              <div className="text-4xl mb-4">📄</div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            <div className="jankoti-fade-in">
+              <div className="text-6xl mb-6">📄</div>
+              <h3 className="text-2xl font-semibold mb-3" style={{ color: '#462a67' }}>
                 {file.name}
               </h3>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-lg mb-3" style={{ color: '#6e727a' }}>
                 {formatFileSize(file.size)}
               </p>
-              <p className="text-sm text-purple-600 font-medium">
+              <p className="text-sm font-medium" style={{ color: '#af19d7' }}>
                 Click to change file
               </p>
               
               {/* Upload Progress */}
               {loading && uploadProgress > 0 && (
-                <div className="mt-4">
-                  <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-sm text-gray-500 mt-2">
+                <div className="mt-6">
+                  <div className="h-3 rounded-full" style={{ background: '#f4ecfb' }}>
+                    <div 
+                      className="h-3 rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${uploadProgress}%`,
+                        background: 'linear-gradient(90deg, #af19d7 0%, #7164bc 100%)'
+                      }}
+                    ></div>
+                  </div>
+                  <p className="text-sm mt-3" style={{ color: '#6e727a' }}>
                     Processing... {Math.round(uploadProgress)}%
                   </p>
                 </div>
               )}
             </div>
           ) : (
-            <div className="animate-fade-in">
-              <div className="text-4xl mb-4">📁</div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+            <div className="jankoti-fade-in">
+              <div className="text-6xl mb-6">📁</div>
+              <h3 className="text-2xl font-semibold mb-3" style={{ color: '#462a67' }}>
                 Drop your resume here
               </h3>
-              <p className="text-gray-600 mb-2">
-                or <span className="text-purple-600 font-medium">click to browse</span>
+              <p className="text-lg mb-3" style={{ color: '#6e727a' }}>
+                or <span className="font-semibold" style={{ color: '#af19d7' }}>click to browse</span>
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm" style={{ color: '#9c95a3' }}>
                 Supports PDF, DOCX, TXT (max 10MB)
               </p>
             </div>
           )}
         </div>
 
-        {/* Resume Preview */}
-        {previewData && (
+        {/* Resume Preview - Will show after upload */}
+        {file && (
           <Card className="border border-blue-200 bg-blue-50">
             <CardHeader>
-              <CardTitle className="text-lg text-blue-800 flex items-center justify-between">
-                📊 Resume Analysis Preview
-                {previewData.ats_quality && (
-                  <Badge 
-                    variant="outline" 
-                    className={`${getATSScoreColor(previewData.ats_quality.score)} border-current`}
-                  >
-                    ATS Score: {previewData.ats_quality.score}/100
-                  </Badge>
-                )}
+              <CardTitle className="text-lg text-blue-800">
+                📄 Ready to Process
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="text-center">
-                  <div className="font-semibold text-blue-700">
-                    {previewData.extracted_data?.skills?.count || 0}
-                  </div>
-                  <div className="text-blue-600">Skills Found</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-blue-700">
-                    {previewData.extracted_data?.project_names?.count || 0}
-                  </div>
-                  <div className="text-blue-600">Projects</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-blue-700">
-                    {previewData.extracted_data?.experience?.count || 0}
-                  </div>
-                  <div className="text-blue-600">Experience</div>
-                </div>
-                <div className="text-center">
-                  <div className="font-semibold text-blue-700">
-                    {previewData.extracted_data?.education?.count || 0}
-                  </div>
-                  <div className="text-blue-600">Education</div>
-                </div>
-              </div>
-              
-              {previewData.ats_quality?.suggestions && previewData.ats_quality.suggestions.length > 0 && (
-                <div className="mt-4 p-3 bg-yellow-100 rounded-lg">
-                  <h4 className="font-medium text-yellow-800 mb-2">💡 Resume Suggestions:</h4>
-                  <ul className="text-sm text-yellow-700 space-y-1">
-                    {previewData.ats_quality.suggestions.slice(0, 2).map((suggestion, index) => (
-                      <li key={index}>• {suggestion}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <p className="text-blue-700">
+                Your resume <strong>{file.name}</strong> is ready for AI analysis. 
+                Click "Generate Interview Questions" to start the process.
+              </p>
             </CardContent>
           </Card>
         )}
 
         {/* Settings */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="border border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Difficulty Level</CardTitle>
-              <CardDescription>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Card className="jankoti-card" style={{ border: '1px solid rgba(70, 42, 103, 0.1)' }}>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl" style={{ color: '#462a67' }}>Difficulty Level</CardTitle>
+              <CardDescription style={{ color: '#6e727a' }}>
                 {getDifficultyDescription(difficulty)}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {['easy', 'medium', 'hard'].map((level) => (
-                  <label key={level} className="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                  <label key={level} className="flex items-center space-x-4 cursor-pointer p-3 rounded-xl transition-all duration-300 hover:scale-105" style={{ background: difficulty === level ? 'rgba(175, 25, 215, 0.1)' : 'rgba(255, 255, 255, 0.5)' }}>
                     <input
                       type="radio"
                       name="difficulty"
                       value={level}
                       checked={difficulty === level}
                       onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-4 h-4 text-purple-600"
+                      className="w-5 h-5"
+                      style={{ accentColor: '#af19d7' }}
                     />
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${getDifficultyColor(level)}`}></div>
-                      <span className="capitalize font-medium">{level}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-4 h-4 rounded-full`} style={{ background: level === 'easy' ? '#6f9ca8' : level === 'medium' ? '#c97c42' : '#b944ac' }}></div>
+                      <span className="capitalize font-semibold text-lg" style={{ color: '#462a67' }}>{level}</span>
                     </div>
                   </label>
                 ))}
@@ -328,32 +290,32 @@ const ResumeUpload = ({ onResumeUploaded }) => {
             </CardContent>
           </Card>
 
-          <Card className="border border-gray-200">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg">Number of Questions</CardTitle>
-              <CardDescription>
+          <Card className="jankoti-card" style={{ border: '1px solid rgba(70, 42, 103, 0.1)' }}>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl" style={{ color: '#462a67' }}>Number of Questions</CardTitle>
+              <CardDescription style={{ color: '#6e727a' }}>
                 More questions provide comprehensive coverage
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <input
                   type="range"
                   min="5"
-                  max="20"
+                  max="50"
                   value={numQuestions}
                   onChange={(e) => setNumQuestions(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className="w-full h-3 rounded-lg appearance-none cursor-pointer"
                   style={{
-                    background: `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${((numQuestions - 5) / 15) * 100}%, #e5e7eb ${((numQuestions - 5) / 15) * 100}%, #e5e7eb 100%)`
+                    background: `linear-gradient(to right, #af19d7 0%, #af19d7 ${((numQuestions - 5) / 45) * 100}%, #f4ecfb ${((numQuestions - 5) / 45) * 100}%, #f4ecfb 100%)`
                   }}
                 />
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>5 min</span>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-800">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium" style={{ color: '#6e727a' }}>5 min</span>
+                  <Badge className="px-4 py-2 text-lg font-semibold" style={{ background: 'linear-gradient(135deg, #af19d7 0%, #df82ff 100%)', color: 'white' }}>
                     {numQuestions} questions (~{Math.round(numQuestions * 2.5)} min)
                   </Badge>
-                  <span>20 max</span>
+                  <span className="text-sm font-medium" style={{ color: '#6e727a' }}>50 max</span>
                 </div>
               </div>
             </CardContent>
@@ -374,42 +336,53 @@ const ResumeUpload = ({ onResumeUploaded }) => {
         <Button
           onClick={handleSubmit}
           disabled={!file || loading}
-          className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 transition-all duration-300"
+          className="w-full h-16 text-xl font-bold rounded-2xl transition-all duration-300 hover:transform hover:scale-105 disabled:opacity-50"
+          style={{ 
+            background: loading ? '#9c95a3' : 'linear-gradient(135deg, #462a67 0%, #7164bc 100%)',
+            color: 'white',
+            boxShadow: '0 8px 32px rgba(70, 42, 103, 0.3)'
+          }}
         >
           {loading ? (
-            <div className="flex items-center space-x-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>Processing Resume...</span>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <span>🚀</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-2xl">🚀</span>
               <span>Generate Interview Questions</span>
             </div>
           )}
         </Button>
 
         {/* Info Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-          <Card className="text-center border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="text-3xl mb-3">🤖</div>
-              <h4 className="font-semibold text-gray-800 mb-2">AI-Powered Analysis</h4>
-              <p className="text-sm text-gray-600">Advanced AI analyzes your resume content and generates relevant questions</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+          <Card className="text-center jankoti-card transition-all duration-300 hover:transform hover:scale-105" style={{ border: '1px solid rgba(70, 42, 103, 0.1)', background: 'linear-gradient(135deg, #f7eeff 0%, #ffffff 100%)' }}>
+            <CardContent className="p-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #af19d7 0%, #df82ff 100%)' }}>
+                <span className="text-3xl">🤖</span>
+              </div>
+              <h4 className="text-xl font-bold mb-3" style={{ color: '#462a67' }}>AI-Powered Analysis</h4>
+              <p className="text-sm leading-relaxed" style={{ color: '#6e727a' }}>Advanced AI analyzes your resume content and generates relevant questions</p>
             </CardContent>
           </Card>
-          <Card className="text-center border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="text-3xl mb-3">🎯</div>
-              <h4 className="font-semibold text-gray-800 mb-2">Personalized Questions</h4>
-              <p className="text-sm text-gray-600">Questions tailored to your specific skills, projects, and experience</p>
+          <Card className="text-center jankoti-card transition-all duration-300 hover:transform hover:scale-105" style={{ border: '1px solid rgba(70, 42, 103, 0.1)', background: 'linear-gradient(135deg, #f7eeff 0%, #ffffff 100%)' }}>
+            <CardContent className="p-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6f9ca8 0%, #728cab 100%)' }}>
+                <span className="text-3xl">🎯</span>
+              </div>
+              <h4 className="text-xl font-bold mb-3" style={{ color: '#462a67' }}>Personalized Questions</h4>
+              <p className="text-sm leading-relaxed" style={{ color: '#6e727a' }}>Questions tailored to your specific skills, projects, and experience</p>
             </CardContent>
           </Card>
-          <Card className="text-center border border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50 hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="text-3xl mb-3">📊</div>
-              <h4 className="font-semibold text-gray-800 mb-2">ATS Score Analysis</h4>
-              <p className="text-sm text-gray-600">Get insights on resume quality and improvement suggestions</p>
+          <Card className="text-center jankoti-card transition-all duration-300 hover:transform hover:scale-105" style={{ border: '1px solid rgba(70, 42, 103, 0.1)', background: 'linear-gradient(135deg, #f7eeff 0%, #ffffff 100%)' }}>
+            <CardContent className="p-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #c97c42 0%, #ae805d 100%)' }}>
+                <span className="text-3xl">📊</span>
+              </div>
+              <h4 className="text-xl font-bold mb-3" style={{ color: '#462a67' }}>ATS Score Analysis</h4>
+              <p className="text-sm leading-relaxed" style={{ color: '#6e727a' }}>Get insights on resume quality and improvement suggestions</p>
             </CardContent>
           </Card>
         </div>

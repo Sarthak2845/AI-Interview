@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Button } from './ui/button'
 import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
+import Analysis from './Analysis'
 
 const Interview = ({ sessionData, onBack }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -12,6 +13,7 @@ const Interview = ({ sessionData, onBack }) => {
   const [loading, setLoading] = useState(false)
   const [timeSpent, setTimeSpent] = useState({})
   const [startTime, setStartTime] = useState(Date.now())
+  const [showAnalysis, setShowAnalysis] = useState(false)
   const [savedAnswers, setSavedAnswers] = useState(new Set())
   
   const textareaRef = useRef(null)
@@ -160,87 +162,115 @@ const Interview = ({ sessionData, onBack }) => {
     return { quality: 'Detailed', color: 'text-blue-500', bg: 'bg-blue-50' }
   }
 
+  if (showAnalysis) {
+    return <Analysis sessionId={sessionData.sessionId} onBack={() => setShowAnalysis(false)} />
+  }
+
   if (isCompleted) {
     const totalTime = Object.values(timeSpent).reduce((sum, time) => sum + time, 0)
     const avgTimePerQuestion = totalTime / questions.length
     const answeredCount = Object.keys(answers).length
 
     return (
-      <div className="p-8 text-center">
-        <div className="animate-fade-in">
-          <div className="text-6xl mb-6">🎉</div>
-          <CardTitle className="text-3xl font-bold text-gray-800 mb-4">
-            Interview Completed Successfully!
-          </CardTitle>
-          <CardDescription className="text-lg text-gray-600 mb-8">
-            You've completed the interview with {answeredCount} out of {questions.length} questions answered.
-          </CardDescription>
-          
-          {/* Interview Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="border border-gray-200">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-2">
-                  {answeredCount}/{questions.length}
-                </div>
-                <div className="text-sm text-gray-600">Questions Answered</div>
-              </CardContent>
-            </Card>
-            <Card className="border border-gray-200">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-2">
-                  {formatTime(Math.floor(totalTime / 1000))}
-                </div>
-                <div className="text-sm text-gray-600">Total Time</div>
-              </CardContent>
-            </Card>
-            <Card className="border border-gray-200">
-              <CardContent className="p-6 text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-2">
-                  {formatTime(Math.floor(avgTimePerQuestion / 1000))}
-                </div>
-                <div className="text-sm text-gray-600">Avg per Question</div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          {/* ATS Score Summary */}
-          {atsQuality.score && (
-            <Card className="max-w-md mx-auto mb-8 border border-gray-200">
-              <CardHeader>
-                <CardTitle className="text-xl">Resume ATS Score</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className={`text-4xl font-bold mb-2 ${getATSScoreColor(atsQuality.score)}`}>
-                    {atsQuality.score}/100
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="animate-fade-in">
+            <div className="text-8xl mb-8">🎉</div>
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">
+              Interview Completed Successfully!
+            </h2>
+            <p className="text-xl text-gray-600 mb-12">
+              Congratulations! You've completed the interview with {answeredCount} out of {questions.length} questions answered.
+            </p>
+            
+            {/* Interview Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="text-4xl font-bold text-purple-600 mb-3">
+                    {answeredCount}/{questions.length}
                   </div>
-                  <Badge 
-                    variant="secondary" 
-                    className={`bg-gradient-to-r ${getATSScoreBackground(atsQuality.score)} text-white`}
-                  >
-                    {atsQuality.rating}
-                  </Badge>
-                  <Progress value={atsQuality.score} className="mt-4" />
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                  <div className="text-lg font-medium text-gray-600">Questions Answered</div>
+                  <div className="mt-4">
+                    <Progress value={(answeredCount / questions.length) * 100} className="h-3" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="text-4xl font-bold text-blue-600 mb-3">
+                    {formatTime(Math.floor(totalTime / 1000))}
+                  </div>
+                  <div className="text-lg font-medium text-gray-600">Total Time</div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    Avg: {formatTime(Math.floor(avgTimePerQuestion / 1000))} per question
+                  </div>
+                </CardContent>
+              </Card>
+              <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+                <CardContent className="p-8 text-center">
+                  <div className="text-4xl font-bold text-green-600 mb-3 capitalize">
+                    {sessionData.difficulty}
+                  </div>
+                  <div className="text-lg font-medium text-gray-600">Difficulty Level</div>
+                  <div className="text-sm text-gray-500 mt-2">
+                    {questions.length} questions total
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+            
+            {/* ATS Score Summary */}
+            {atsQuality.score && (
+              <Card className="max-w-md mx-auto mb-12 border-0 shadow-xl bg-gradient-to-r from-purple-50 to-indigo-50">
+                <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-lg">
+                  <CardTitle className="text-xl">Resume ATS Score</CardTitle>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <div className="text-center">
+                    <div className={`text-5xl font-bold mb-4 ${getATSScoreColor(atsQuality.score)}`}>
+                      {atsQuality.score}/100
+                    </div>
+                    <Badge 
+                      variant="secondary" 
+                      className={`text-lg px-4 py-2 bg-gradient-to-r ${getATSScoreBackground(atsQuality.score)} text-white`}
+                    >
+                      {atsQuality.rating}
+                    </Badge>
+                    <Progress value={atsQuality.score} className="mt-6 h-3" />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
-          <div className="space-y-4">
-            <Button
-              onClick={onBack}
-              variant="outline"
-              className="mr-4"
-            >
-              Upload Another Resume
-            </Button>
-            <Button
-              onClick={() => window.location.reload()}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600"
-            >
-              Start New Interview
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex flex-wrap justify-center gap-6">
+              <Button
+                onClick={() => setShowAnalysis(true)}
+                size="lg"
+                className="px-8 py-4 text-lg bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 shadow-lg"
+              >
+                <span className="mr-2 text-xl">📊</span>
+                Generate Performance Analysis
+              </Button>
+              <Button
+                onClick={onBack}
+                size="lg"
+                variant="outline"
+                className="px-8 py-4 text-lg border-2 border-gray-300 hover:border-gray-400"
+              >
+                <span className="mr-2">📄</span>
+                Upload Another Resume
+              </Button>
+              <Button
+                onClick={() => window.location.reload()}
+                size="lg"
+                className="px-8 py-4 text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg"
+              >
+                <span className="mr-2">🚀</span>
+                Start New Interview
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -250,97 +280,100 @@ const Interview = ({ sessionData, onBack }) => {
   const answerQuality = getAnswerQuality(currentAnswer)
 
   return (
-    <div className="p-8">
-      {/* Header with Progress */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">Interview Session</h2>
-            <div className="flex items-center space-x-4 text-gray-600">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <Badge variant="secondary" className="capitalize">
-                {sessionData.difficulty}
-              </Badge>
-              {savedAnswers.has(currentQuestionIndex) && (
-                <Badge variant="outline" className="text-green-600 border-green-300">
-                  ✓ Saved
-                </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 p-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header with Progress */}
+        <Card className="mb-8 border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardContent className="p-8">
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Interview Session</h2>
+                <div className="flex items-center space-x-6 text-gray-600">
+                  <span className="text-lg font-medium">Question {currentQuestionIndex + 1} of {questions.length}</span>
+                  <Badge variant="secondary" className="capitalize text-lg px-3 py-1">
+                    {sessionData.difficulty}
+                  </Badge>
+                  {savedAnswers.has(currentQuestionIndex) && (
+                    <Badge variant="outline" className="text-green-600 border-green-300 text-lg px-3 py-1">
+                      ✓ Saved
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              
+              {/* ATS Score Display */}
+              {atsQuality.score && (
+                <Card className="border border-gray-200">
+                  <CardContent className="p-4 text-center">
+                    <div className="text-sm text-gray-600 mb-1">ATS Score</div>
+                    <div className={`text-3xl font-bold ${getATSScoreColor(atsQuality.score)}`}>
+                      {atsQuality.score}/100
+                    </div>
+                    <Badge 
+                      variant="secondary" 
+                      className={`text-xs bg-gradient-to-r ${getATSScoreBackground(atsQuality.score)} text-white`}
+                    >
+                      {atsQuality.rating}
+                    </Badge>
+                  </CardContent>
+                </Card>
               )}
             </div>
-          </div>
-          
-          {/* ATS Score Display */}
-          {atsQuality.score && (
-            <Card className="border border-gray-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-sm text-gray-600 mb-1">ATS Score</div>
-                <div className={`text-2xl font-bold ${getATSScoreColor(atsQuality.score)}`}>
-                  {atsQuality.score}/100
-                </div>
-                <Badge 
-                  variant="secondary" 
-                  className={`text-xs bg-gradient-to-r ${getATSScoreBackground(atsQuality.score)} text-white`}
-                >
-                  {atsQuality.rating}
-                </Badge>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-        
-        <Progress value={progress} className="h-3" />
-        <div className="flex justify-between text-sm text-gray-500 mt-2">
-          <span>Progress: {Math.round(progress)}%</span>
-          <span>{questions.length - currentQuestionIndex - 1} remaining</span>
-        </div>
-      </div>
-
-      {/* Question Card */}
-      {currentQuestion && (
-        <Card className="mb-6 border-l-4 border-l-purple-500 animate-slide-in">
-          <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
-            <div className="flex items-center justify-between mb-2">
-              <Badge variant="outline" className="text-purple-700 border-purple-300">
-                Question {currentQuestionIndex + 1}
-              </Badge>
-            </div>
-            <CardTitle className="text-xl leading-relaxed text-gray-800">
-              {currentQuestion.question}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            {/* Answer Input */}
-            <div className="relative">
-              <textarea
-                ref={textareaRef}
-                value={currentAnswer}
-                onChange={(e) => setCurrentAnswer(e.target.value)}
-                placeholder="Type your answer here... Be specific and provide examples from your experience."
-                className="w-full h-40 p-4 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                disabled={loading}
-              />
-            </div>
-
-            {/* Answer Statistics */}
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex items-center space-x-4 text-sm">
-                <span className="text-gray-500">
-                  {currentAnswer.length} characters • {currentAnswer.trim().split(/\s+/).filter(word => word.length > 0).length} words
-                </span>
-                <Badge 
-                  variant="outline" 
-                  className={`${answerQuality.color} ${answerQuality.bg} border-current`}
-                >
-                  {answerQuality.quality}
-                </Badge>
-              </div>
-              <div className="text-sm text-gray-500">
-                💡 Aim for 50-150 words for detailed answers
-              </div>
+            
+            <Progress value={progress} className="h-4 mb-4" />
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>Progress: {Math.round(progress)}%</span>
+              <span>{questions.length - currentQuestionIndex - 1} remaining</span>
             </div>
           </CardContent>
         </Card>
-      )}
+
+        {/* Question Card */}
+        {currentQuestion && (
+          <Card className="mb-8 border-0 shadow-xl bg-white/90 backdrop-blur-sm animate-slide-in">
+            <CardHeader className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-t-lg">
+              <div className="flex items-center justify-between mb-2">
+                <Badge variant="outline" className="text-white border-white/30 bg-white/10">
+                  Question {currentQuestionIndex + 1}
+                </Badge>
+              </div>
+              <CardTitle className="text-2xl leading-relaxed">
+                {currentQuestion.question}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              {/* Answer Input */}
+              <div className="relative">
+                <textarea
+                  ref={textareaRef}
+                  value={currentAnswer}
+                  onChange={(e) => setCurrentAnswer(e.target.value)}
+                  placeholder="Type your answer here... Be specific and provide examples from your experience."
+                  className="w-full h-48 p-6 border-2 border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-lg leading-relaxed"
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Answer Statistics */}
+              <div className="flex justify-between items-center mt-6 p-4 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-6 text-sm">
+                  <span className="text-gray-600 font-medium">
+                    {currentAnswer.length} characters • {currentAnswer.trim().split(/\s+/).filter(word => word.length > 0).length} words
+                  </span>
+                  <Badge 
+                    variant="outline" 
+                    className={`${answerQuality.color} ${answerQuality.bg} border-current font-medium`}
+                  >
+                    {answerQuality.quality}
+                  </Badge>
+                </div>
+                <div className="text-sm text-gray-500 font-medium">
+                  💡 Aim for 50-150 words for detailed answers
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
       {/* ATS Suggestions */}
       {atsQuality.suggestions && atsQuality.suggestions.length > 0 && currentQuestionIndex === 0 && (
@@ -363,102 +396,109 @@ const Interview = ({ sessionData, onBack }) => {
         </Card>
       )}
 
-      {/* Navigation */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex space-x-2">
-          <Button
-            onClick={handlePreviousQuestion}
-            disabled={currentQuestionIndex === 0}
-            variant="outline"
-          >
-            ← Previous
-          </Button>
-          <Button
-            onClick={handleSkipQuestion}
-            disabled={currentQuestionIndex === questions.length - 1}
-            variant="ghost"
-            className="text-gray-500"
-          >
-            Skip Question
-          </Button>
+        {/* Navigation */}
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex space-x-4">
+            <Button
+              onClick={handlePreviousQuestion}
+              disabled={currentQuestionIndex === 0}
+              variant="outline"
+              size="lg"
+              className="px-6 py-3"
+            >
+              ← Previous
+            </Button>
+            <Button
+              onClick={handleSkipQuestion}
+              disabled={currentQuestionIndex === questions.length - 1}
+              variant="ghost"
+              size="lg"
+              className="text-gray-500 px-6 py-3"
+            >
+              Skip Question
+            </Button>
+          </div>
+
+          <div className="flex space-x-4">
+            <Button
+              onClick={onBack}
+              variant="outline"
+              size="lg"
+              className="px-6 py-3"
+            >
+              Back to Upload
+            </Button>
+            
+            <Button
+              onClick={handleAnswerSubmit}
+              disabled={!currentAnswer.trim() || loading}
+              size="lg"
+              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg"
+            >
+              {loading ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Submitting...</span>
+                </div>
+              ) : currentQuestionIndex === questions.length - 1 ? (
+                'Complete Interview'
+              ) : (
+                'Submit & Next →'
+              )}
+            </Button>
+          </div>
         </div>
 
-        <div className="flex space-x-4">
-          <Button
-            onClick={onBack}
-            variant="outline"
-          >
-            Back to Upload
-          </Button>
-          
-          <Button
-            onClick={handleAnswerSubmit}
-            disabled={!currentAnswer.trim() || loading}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-          >
-            {loading ? (
+        {/* Question Overview */}
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-xl">Question Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-5 md:grid-cols-10 gap-3">
+              {questions.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all transform hover:scale-105 ${
+                    index === currentQuestionIndex
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white ring-4 ring-purple-300 shadow-lg'
+                      : answers[index]
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md'
+                      : savedAnswers.has(index)
+                      ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300 shadow-sm'
+                  }`}
+                  onClick={() => {
+                    setCurrentQuestionIndex(index)
+                    setCurrentAnswer(answers[index] || '')
+                  }}
+                  title={`Question ${index + 1}${answers[index] ? ' (Answered)' : savedAnswers.has(index) ? ' (Saved)' : ''}`}
+                >
+                  {index + 1}
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center space-x-8 mt-6 text-sm font-medium">
               <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Submitting...</span>
+                <div className="w-4 h-4 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full"></div>
+                <span>Current</span>
               </div>
-            ) : currentQuestionIndex === questions.length - 1 ? (
-              'Complete Interview'
-            ) : (
-              'Submit & Next →'
-            )}
-          </Button>
-        </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full"></div>
+                <span>Submitted</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"></div>
+                <span>Auto-saved</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-gray-200 rounded-full"></div>
+                <span>Pending</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-
-      {/* Question Overview */}
-      <Card className="border border-gray-200">
-        <CardHeader>
-          <CardTitle className="text-lg">Question Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-5 md:grid-cols-10 gap-2">
-            {questions.map((_, index) => (
-              <div
-                key={index}
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-medium cursor-pointer transition-all ${
-                  index === currentQuestionIndex
-                    ? 'bg-purple-600 text-white ring-2 ring-purple-300'
-                    : answers[index]
-                    ? 'bg-green-500 text-white'
-                    : savedAnswers.has(index)
-                    ? 'bg-yellow-500 text-white'
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-                onClick={() => {
-                  setCurrentQuestionIndex(index)
-                  setCurrentAnswer(answers[index] || '')
-                }}
-                title={`Question ${index + 1}${answers[index] ? ' (Answered)' : savedAnswers.has(index) ? ' (Saved)' : ''}`}
-              >
-                {index + 1}
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center space-x-6 mt-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
-              <span>Current</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span>Submitted</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span>Auto-saved</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-3 h-3 bg-gray-200 rounded-full"></div>
-              <span>Pending</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }

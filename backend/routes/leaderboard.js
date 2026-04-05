@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../middleware/authMiddleware');
 const {
   addToLeaderboard,
   getGlobalLeaderboard,
@@ -7,16 +8,16 @@ const {
   getLeaderboardStats
 } = require('../controllers/leaderboardController');
 
-// Add user to leaderboard
-router.post('/add', addToLeaderboard);
+// Add user to leaderboard (auth required)
+router.post('/add', authMiddleware, addToLeaderboard);
 
-// Get global leaderboard
+// Get global leaderboard (public)
 router.get('/global', getGlobalLeaderboard);
 
-// Get user ranking
-router.get('/user/:userId', getUserRanking);
+// Get user ranking (auth required)
+router.get('/user/:userId', authMiddleware, getUserRanking);
 
-// Get leaderboard statistics
+// Get leaderboard statistics (public)
 router.get('/stats', getLeaderboardStats);
 
 module.exports = router;

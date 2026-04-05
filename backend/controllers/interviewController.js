@@ -11,7 +11,7 @@ class InterviewController {
   async uploadResume(req, res, next) {
     try {
       const { difficulty = 'medium', numQuestions = 10 } = req.body;
-      const userId = '1'; // Default user ID
+      const userId = req.user.id;
       
       if (!req.file) {
         return res.status(400).json({ 
@@ -143,10 +143,10 @@ class InterviewController {
       // Find session and question
       const session = await Session.findById(sessionId);
       if (!session) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Session not found' 
-        });
+        return res.status(404).json({ success: false, error: 'Session not found' });
+      }
+      if (session.userId !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
       }
 
       const question = await Question.findOne({ sessionId, questionIndex });
@@ -209,10 +209,10 @@ class InterviewController {
       
       const session = await Session.findById(sessionId);
       if (!session) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Session not found' 
-        });
+        return res.status(404).json({ success: false, error: 'Session not found' });
+      }
+      if (session.userId !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
       }
 
       const questions = await Question.find({ sessionId }).sort({ questionIndex: 1 });
@@ -242,10 +242,10 @@ class InterviewController {
       
       const session = await Session.findById(sessionId);
       if (!session) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Session not found' 
-        });
+        return res.status(404).json({ success: false, error: 'Session not found' });
+      }
+      if (session.userId !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
       }
 
       const questions = await Question.find({ sessionId }).sort({ questionIndex: 1 });
@@ -288,7 +288,7 @@ class InterviewController {
   // Get all sessions
   async getAllSessions(req, res, next) {
     try {
-      const userId = '1'; // Default user ID
+      const userId = req.user.id;
       
       const sessions = await Session.find({ userId }).sort({ createdAt: -1 });
       const sessionList = [];

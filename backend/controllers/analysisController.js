@@ -12,10 +12,10 @@ class AnalysisController {
       
       const session = await Session.findById(sessionId);
       if (!session) {
-        return res.status(404).json({ 
-          success: false, 
-          error: 'Session not found' 
-        });
+        return res.status(404).json({ success: false, error: 'Session not found' });
+      }
+      if (session.userId !== req.user.id.toString()) {
+        return res.status(403).json({ success: false, error: 'Forbidden' });
       }
 
       // Check if analysis already exists
@@ -78,17 +78,12 @@ class AnalysisController {
       try {
         const questions = await Question.find({ sessionId });
         const allTags = [...new Set(questions.flatMap(q => q.tags || []))];
-        
-        // Generate dummy user data (replace with real user data when auth is implemented)
-        const dummyUser = {
-          userId: `user_${sessionId.toString().slice(-6)}`,
-          userName: `User ${Math.floor(Math.random() * 1000)}`,
-          userEmail: `user${Math.floor(Math.random() * 1000)}@example.com`,
-          profilePicture: null
-        };
-        
+
         const leaderboardData = {
-          ...dummyUser,
+          userId: req.user.id,
+          userName: req.user.name || req.user.email,
+          userEmail: req.user.email,
+          profilePicture: req.user.profilePicture || null,
           sessionId,
           totalScore: analysisResult.overallScore,
           difficulty: session.difficulty,

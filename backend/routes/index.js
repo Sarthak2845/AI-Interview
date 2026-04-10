@@ -6,7 +6,7 @@ const interviewRoutes = require('./interview');
 const analysisRoutes = require('./analysis');
 const leaderboardRoutes = require('./leaderboard');
 const questionBankRoutes = require('./questionBank');
-
+const authRoutes = require('./auth');
 // Health check
 router.get('/health', (req, res) => {
   res.json({
@@ -22,7 +22,7 @@ router.use('/', interviewRoutes);
 router.use('/', analysisRoutes);
 router.use('/leaderboard', leaderboardRoutes);
 router.use('/question-bank', questionBankRoutes);
-
+router.use('/auth',authRoutes)
 // 404 handler for API routes
 router.use('*', (req, res) => {
   res.status(404).json({ 

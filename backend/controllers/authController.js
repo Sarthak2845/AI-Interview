@@ -93,5 +93,12 @@ const logOut = async (req, res) => {
         res.status(500).json({ message: 'Error during logout' });
     }
 }
+const getMe = async (req, res) => {
+  try {
+    res.status(200).json({ user: req.user })
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user' })
+  }
+}
 
-module.exports = { RegisterUser, LoginUser, logOut };
+module.exports = { RegisterUser, LoginUser, logOut, getMe };

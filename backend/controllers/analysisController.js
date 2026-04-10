@@ -54,6 +54,10 @@ class AnalysisController {
       // Generate analysis using AI
       const analysisResult = await aiService.analyzeAnswers(questions, answers);
 
+      const VALID_HIRING = ['HIRE', 'MAYBE', 'NO_HIRE']
+      const rawHiring = (analysisResult.hiringRecommendation || 'MAYBE').toString().trim()
+      const hiringRecommendation = VALID_HIRING.find(v => rawHiring.startsWith(v)) || 'MAYBE'
+
       // Save analysis to database
       analysis = new Analysis({
         sessionId,
@@ -64,7 +68,7 @@ class AnalysisController {
         improvements: analysisResult.improvements,
         detailedAnalysis: analysisResult.detailedAnalysis,
         recommendations: analysisResult.recommendations,
-        hiringRecommendation: analysisResult.hiringRecommendation || 'MAYBE'
+        hiringRecommendation
       });
       await analysis.save();
 

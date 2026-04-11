@@ -5,7 +5,7 @@ import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
 import {
   FiAward, FiBarChart2, FiAlertTriangle, FiThumbsUp, FiTarget,
-  FiFileText, FiLightbulb, FiPrinter, FiRefreshCw, FiChevronLeft,
+  FiFileText, FiInfo, FiPrinter, FiRefreshCw, FiChevronLeft,
   FiLoader, FiZap, FiXCircle, FiCheck
 } from 'react-icons/fi'
 
@@ -286,7 +286,7 @@ const Analysis = ({ sessionId, onBack, onReset }) => {
             <Card className="mb-8 border-0 shadow-xl bg-gradient-to-br from-blue-50 to-indigo-50">
               <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
                 <CardTitle className="text-xl flex items-center gap-2">
-                  <FiLightbulb size={20} /> Personalized Recommendations
+                  <FiInfo size={20} /> Personalized Recommendations
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8">

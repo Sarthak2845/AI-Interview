@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { FiUpload, FiCpu, FiMessageSquare, FiBarChart2, FiShield, FiZap, FiAward, FiArrowRight } from 'react-icons/fi'
+import { FiUpload, FiCpu, FiMessageSquare, FiBarChart2, FiShield, FiZap, FiAward, FiArrowRight, FiFileText } from 'react-icons/fi'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -14,6 +14,7 @@ const STEPS = [
 const FEATURES = [
   { icon: <FiZap size={20} />,      title: 'AI-Powered Questions',  desc: 'Groq-powered engine generates role-specific questions tailored to your resume.' },
   { icon: <FiShield size={20} />,   title: 'ATS Quality Check',     desc: 'Instantly assess how well your resume passes Applicant Tracking Systems.' },
+  { icon: <FiFileText size={20} />, title: 'Resume Builder',        desc: 'Create ATS-optimized resumes with 100% compatibility score using AI.' },
   { icon: <FiAward size={20} />,    title: 'Leaderboard',           desc: 'Compare your scores with other candidates and climb the ranks.' },
   { icon: <FiBarChart2 size={20} />, title: 'Deep Analysis',        desc: 'Get per-question feedback, strengths, and areas to improve after each session.' },
 ]
@@ -57,6 +58,14 @@ export default function Home() {
                              hover:shadow-[0_12px_36px_rgba(109,40,217,0.55)]
                              hover:scale-[1.03] active:scale-95 transition-all duration-200">
               <FiZap size={15} /> Start Free Interview
+            </Link>
+            <Link to="/resume-builder"
+                  className="flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-white
+                             bg-gradient-to-r from-green-600 to-emerald-500
+                             shadow-[0_8px_28px_rgba(34,197,94,0.45)]
+                             hover:shadow-[0_12px_36px_rgba(34,197,94,0.55)]
+                             hover:scale-[1.03] active:scale-95 transition-all duration-200">
+              <FiFileText size={15} /> Build ATS Resume
             </Link>
             <a href="#how"
                className="flex items-center gap-2 px-7 py-3.5 rounded-2xl text-sm font-bold text-gray-700
@@ -110,7 +119,7 @@ export default function Home() {
             Everything you need to prepare
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {FEATURES.map(({ icon, title, desc }) => (
               <div key={title}
                    className="flex flex-col gap-4 p-6 rounded-2xl border border-gray-100 bg-white

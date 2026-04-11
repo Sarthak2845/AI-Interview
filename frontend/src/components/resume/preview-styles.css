@@ -1,0 +1,115 @@
+/* Resume Preview Utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Template Preview Animations */
+.template-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.template-card:hover {
+  transform: translateY(-4px);
+}
+
+.template-card.selected {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Preview iframe styling */
+.preview-iframe {
+  border: none;
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive preview modes */
+.preview-desktop {
+  max-width: none;
+}
+
+.preview-mobile {
+  max-width: 375px;
+  margin: 0 auto;
+}
+
+.preview-print {
+  max-width: 8.5in;
+  margin: 0 auto;
+}
+
+/* ATS Score indicators */
+.ats-score-excellent {
+  color: #059669;
+  background-color: #d1fae5;
+}
+
+.ats-score-good {
+  color: #d97706;
+  background-color: #fef3c7;
+}
+
+.ats-score-fair {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+/* Template category badges */
+.category-professional {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+.category-corporate {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.category-minimal {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.category-creative {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.category-executive {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.category-technical {
+  background-color: #d1fae5;
+  color: #059669;
+}

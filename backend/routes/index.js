@@ -7,6 +7,8 @@ const analysisRoutes = require('./analysis');
 const leaderboardRoutes = require('./leaderboard');
 const questionBankRoutes = require('./questionBank');
 const authRoutes = require('./auth');
+const resumeRoutes = require('./resume');
+
 // Health check
 router.get('/health', (req, res) => {
   res.json({
@@ -22,7 +24,9 @@ router.use('/', interviewRoutes);
 router.use('/', analysisRoutes);
 router.use('/leaderboard', leaderboardRoutes);
 router.use('/question-bank', questionBankRoutes);
-router.use('/auth',authRoutes)
+router.use('/auth', authRoutes);
+router.use('/resume', resumeRoutes);
+
 // 404 handler for API routes
 router.use('*', (req, res) => {
   res.status(404).json({ 
@@ -38,7 +42,10 @@ router.use('*', (req, res) => {
       'POST /api/analyze/:sessionId',
       'GET /api/analysis/:sessionId',
       'DELETE /api/analysis/:sessionId',
-      'GET /api/analysis-status/:sessionId'
+      'GET /api/analysis-status/:sessionId',
+      'POST /api/resume/save',
+      'POST /api/resume/generate',
+      'GET /api/resume/saved'
     ]
   });
 });

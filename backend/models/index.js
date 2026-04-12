@@ -5,5 +5,6 @@ const User         = require('./User');
 const Analysis     = require('./Analysis');
 const Leaderboard  = require('./Leaderboard');
 const QuestionBank = require('./QuestionBank');
+const Resume       = require('./Resume');
 
-module.exports = { Session, Question, Answer, User, Analysis, Leaderboard, QuestionBank };
+module.exports = { Session, Question, Answer, User, Analysis, Leaderboard, QuestionBank, Resume };

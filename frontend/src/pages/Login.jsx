@@ -1,37 +1,50 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from 'react-icons/fi'
 import logo from '../assets/Logo.png'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
-const API = import.meta.env.VITE_BACKEND_URL
 
 export default function Login() {
   const [show, setShow] = useState(false)
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState({})
-  const navigate = useNavigate();
-  const { login } = useAuth()
-const handleSubmit = async (e) => {
-  e.preventDefault()
-  if (!validate()) return
-  setError({})
-  setLoading(true)
+  const navigate = useNavigate()
+  const { login, isAuthenticated } = useAuth()
 
-  const res = await login(form)
+  // Redirect if already logged in
+  useEffect(() => {
+    console.log('Login page - isAuthenticated:', isAuthenticated)
+    if (isAuthenticated) {
+      console.log('Already authenticated, redirecting to home')
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
 
-  if (res.success) {
-    navigate('/interview')
-  } else {
-    setError(prev => ({
-      ...prev,
-      api: res.message
-    }))
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!validate()) return
+    setError({})
+    setLoading(true)
+
+    console.log('Submitting login form')
+    const res = await login(form)
+    console.log('Login result:', res)
+
+    if (res.success) {
+      console.log('Login successful, navigating to home')
+      navigate('/')
+    } else {
+      console.log('Login failed:', res.message)
+      setError(prev => ({
+        ...prev,
+        api: res.message
+      }))
+    }
+
+    setLoading(false)
   }
 
-  setLoading(false)
-}
   const validate = () => {
     const newError = {}
     if (!form.email.trim()) {

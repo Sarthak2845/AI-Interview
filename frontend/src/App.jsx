@@ -4,10 +4,12 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import InterviewPage from './pages/InterviewPage'
 import Leaderboard from './components/Leaderboard'
+import ResumeBuilder from './components/ResumeBuilder'
 import { useAuth } from './context/authContext'
 
 function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, loading, isAuthenticated } = useAuth()
+  
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <svg className="animate-spin h-8 w-8 text-violet-600" fill="none" viewBox="0 0 24 24">
@@ -16,17 +18,19 @@ function ProtectedRoute({ children }) {
       </svg>
     </div>
   )
-  return user ? children : <Navigate to="/login" replace />
+  
+  return isAuthenticated ? children : <Navigate to="/login" replace />
 }
 
 function App() {
   return (
     <Routes>
-      <Route path="/"            element={<Home />} />
-      <Route path="/login"       element={<Login />} />
-      <Route path="/signup"      element={<Signup />} />
-      <Route path="/leaderboard" element={<Leaderboard onBack={() => window.history.back()} />} />
-      <Route path="/interview"   element={<ProtectedRoute><InterviewPage /></ProtectedRoute>} />
+      <Route path="/"              element={<Home />} />
+      <Route path="/login"         element={<Login />} />
+      <Route path="/signup"        element={<Signup />} />
+      <Route path="/leaderboard"   element={<Leaderboard onBack={() => window.history.back()} />} />
+      <Route path="/resume-builder" element={<ProtectedRoute><ResumeBuilder onBack={() => window.history.back()} /></ProtectedRoute>} />
+      <Route path="/interview"     element={<ProtectedRoute><InterviewPage /></ProtectedRoute>} />
     </Routes>
   )
 }

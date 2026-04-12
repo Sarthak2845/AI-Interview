@@ -1,29 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiArrowRight } from 'react-icons/fi'
 import logo from '../assets/Logo.png'
 import { useAuth } from '../context/authContext'
 
-const API = import.meta.env.VITE_BACKEND_URL
 export default function Signup() {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [error, setError] = useState({})
   const set = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }))
-  const navigate = useNavigate();
-  const { signup } = useAuth()
+  const navigate = useNavigate()
+  const { signup, isAuthenticated } = useAuth()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    console.log('Signup page - isAuthenticated:', isAuthenticated)
+    if (isAuthenticated) {
+      console.log('Already authenticated, redirecting to home')
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
     setLoading(true)
     setError({})
 
+    console.log('Submitting signup form')
     const res = await signup(form)
+    console.log('Signup result:', res)
 
     if (res.success) {
-      navigate('/login')
+      console.log('Signup successful, navigating to home')
+      navigate('/')
     } else {
+      console.log('Signup failed:', res.message)
       setError(prev => ({
         ...prev,
         api: res.message
@@ -31,6 +44,7 @@ export default function Signup() {
     }
     setLoading(false)
   }
+
   const validate = () => {
     const newError = {}
     if (!form.name.trim()) {
@@ -44,6 +58,8 @@ export default function Signup() {
     }
     if (!form.password) {
       newError.password = 'Password is required'
+    } else if (form.password.length < 6) {
+      newError.password = 'Password must be at least 6 characters'
     }
     setError(newError)
     return Object.keys(newError).length === 0
